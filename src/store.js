@@ -1,6 +1,6 @@
 // redux in isolation
 
-import { createStore } from "redux";
+import { combineReducers, createStore } from "redux";
 // And so now you see that it has like,
 // this strike through here.
 // And the reason for that is
@@ -20,10 +20,16 @@ import { createStore } from "redux";
 // So you should not be using the Redux core package
 // by itself except for learning purposes.
 
-const initialState = {
+const initialStateAccount = {
   balance: 0,
   loan: 0,
   loanPurpose: "",
+};
+
+const initialStateCustomer = {
+  fullName: "",
+  nationalID: "",
+  createAt: "",
 };
 
 // Now, it's also important to remember
@@ -43,7 +49,7 @@ const initialState = {
 // in case there is none set.
 // So with this, we make this initialState here
 // really the state at the very beginning.
-function reducer(state = initialState, action) {
+function accountReducer(state = initialStateAccount, action) {
   switch (action.type) {
     case "account/deposit":
       return { ...state, balance: state.balance + action.payload };
@@ -74,7 +80,47 @@ function reducer(state = initialState, action) {
   }
 }
 
-const store = createStore(reducer);
+function customerReducer(state = initialStateCustomer, action) {
+  switch (action.type) {
+    case "customer/createCustomer":
+      //     And here we are again, destructuring, the current state
+      // even though we are then overriding all the three
+      // properties that are in there.
+      // So the reason for that is again, that this way
+      // we will not run into any problem if for example
+      // later we add another property
+      // like a status or something like that.
+      return {
+        ...state,
+        fullName: action.payload.fullName,
+        nationalID: action.payload.nationalID,
+        createAt: action.payload.createAt,
+      };
+
+    case "customer/updateName":
+      return { ...state, fullName: action.payload };
+
+    default:
+      return state;
+  }
+}
+
+// Now we cannot simply pass that other reducer in here
+// but instead what we need to do is to combine
+// all the reducers that we have in order to create
+// one so-called root reducer.
+// Because this reducer that creates store he
+// receives is always considered the root reducer.
+// So right now, that's just this one.
+// But again, usually what we always do is to combine
+// all the reducers that we have.
+
+const rootReducer = combineReducers({
+  account: accountReducer,
+  customer: customerReducer,
+});
+
+const store = createStore(rootReducer);
 
 // store.dispatch({ type: "account/deposit", payload: 500 });
 // store.dispatch({ type: "account/withdraw", payload: 200 });
@@ -137,4 +183,42 @@ store.dispatch(requestLoan(1000, "Buy a cheap car"));
 console.log(store.getState());
 
 store.dispatch(payLoan());
+console.log(store.getState());
+
+function createCustomer(fullName, nationalID) {
+  //   And so now let's do customer slash and for the sake
+  // of convention, let's actually name this event here.
+  // Exactly the same thing as the action creator function.
+  return {
+    type: "customer/createCustomer",
+    payload: {
+      fullName: fullName,
+      nationalID: nationalID,
+
+      //       Now, we could also do this inside the reducer
+      // so computing the current date
+      // but that would actually be a side effect.
+      // And so we shouldn't have side effects
+      // in the reducer function.
+      // And so let's do that here.
+      // Now usually we should in fact keep as much
+      // business logic as possible inside the reducer.
+      // But again, since this is actually a side effect,
+      // this does not belong in the reducer.
+      // Okay, so here we simply return the current date
+      // nicely formatted.
+      // And that's actually it.
+      createAt: new Date().toISOString,
+    },
+  };
+}
+
+function updateName(fullName) {
+  return { type: "customer/updateName", payload: fullName };
+}
+
+store.dispatch(createCustomer("Angao", "4679835456"));
+console.log(store.getState());
+
+store.dispatch(deposit(250));
 console.log(store.getState());
