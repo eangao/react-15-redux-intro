@@ -20,3 +20,7 @@ export default App;
 ///////////////////////
 //install redux
 // npm i redux
+
+// connect our Redux store
+// with the React application.
+//npm i react-redux
