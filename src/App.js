@@ -16,3 +16,7 @@ function App() {
 }
 
 export default App;
+
+///////////////////////
+//install redux
+// npm i redux
