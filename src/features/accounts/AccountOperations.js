@@ -14,6 +14,7 @@ function AccountOperations() {
     loan: currentLoan,
     loanPurpose: currentLoanPurpose,
     balance,
+    isLoading,
   } = useSelector((store) => store.account);
 
   console.log(balance);
@@ -21,8 +22,9 @@ function AccountOperations() {
   function handleDeposit() {
     if (!depositAmount) return;
 
-    dispatch(deposit(depositAmount));
+    dispatch(deposit(depositAmount, currency));
     setDepositAmount("");
+    setCurrency("");
   }
 
   function handleWithdrawal() {
@@ -64,7 +66,9 @@ function AccountOperations() {
             <option value="GBP">British Pound</option>
           </select>
 
-          <button onClick={handleDeposit}>Deposit {depositAmount}</button>
+          <button onClick={handleDeposit} disabled={isLoading}>
+            {isLoading ? "Converting..." : `Deposit ${depositAmount}`}
+          </button>
         </div>
 
         <div>
@@ -111,3 +115,48 @@ function AccountOperations() {
 }
 
 export default AccountOperations;
+
+///////////////////
+// Now, the beauty of what we just implemented here is
+// that this component here actually has no idea
+// that the amount is converted behind the scenes.
+// So that conversion is completely hidden from our component.
+// And instead, it is encapsulated right here
+// in the account slice.
+// So it's happening here in the centralized place.
+// And if we had other API calls
+// or other asynchronous operations
+// in these other action creators,
+// then, of course, they would also be in this file.
+// So again, they would then all be
+// in this one centralized place,
+// not spread all over the application.
+// And so with this,
+// we can keep this component here really tidy and clean.
+// I mean, it's not really that clean
+// because we chose to have all this JSX in one file,
+// which usually we would probably split up.
+// But you get the point.
+// So we don't have the data fetching anymore here
+// in the component.
+// So I hope this wasn't all too confusing.
+// And what I mostly want you to retain
+// is that when we are using Thunks,
+// instead of returning an action object
+// from the action creator function,
+// we return a new function.
+// And so then the result of this becomes a function
+// and no longer an object.
+// And so then Redux,
+// when it sees that we are dispatching a function,
+// it will call that function,
+// and into that function,
+// it'll pass in the dispatch function and getState,
+// which we didn't even use, in this case.
+// And so then we can use that dispatch function
+// inside here to delay that dispatching
+// until the asynchronous operation
+// that we want to implement has finished.
+// And so therefore, we can think of this function here sitting
+// between the initial dispatching and the reducer
+// in the store receiving the action.

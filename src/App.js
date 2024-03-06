@@ -29,6 +29,19 @@ export default App;
 //install redux
 // npm i redux
 
+/////
 // connect our Redux store
 // with the React application.
 //npm i react-redux
+
+///////
+//So in order to use this middleware,
+// we need to follow three steps.
+// First, we install the middleware package.
+//
+// Then we apply that middleware to our store.
+//
+// And finally, we use the middleware
+// in our action creator functions.
+//
+// npm  i redux-thunk
