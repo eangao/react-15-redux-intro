@@ -76,25 +76,65 @@ function reducer(state = initialState, action) {
 
 const store = createStore(reducer);
 
-store.dispatch({ type: "account/deposit", payload: 500 });
-store.dispatch({ type: "account/withdraw", payload: 200 });
+// store.dispatch({ type: "account/deposit", payload: 500 });
+// store.dispatch({ type: "account/withdraw", payload: 200 });
+// console.log(store.getState());
+
+// // And then remember how I said
+// // that the payout here will actually a bit more complicated.
+// // So that's why we left this part here for later.
+// // So now for the very first time as a payload,
+// // we will actually pass in another object.
+// // So we haven't done that before,
+// // but of course this is perfectly fine because with this
+// // we can then pass in basically multiple pieces of data.
+// // So let's say that we want an amount of a thousand Euros
+// // and then the purpose is to buy a car.
+
+// store.dispatch({
+//   type: "account/requestLoan",
+//   payload: { amount: 1000, purpose: "Buy a car" },
+// });
+// console.log(store.getState());
+
+// store.dispatch({ type: "account/payLoan" });
+// console.log(store.getState());
+
+/////////////////
+
+// now it's time to build our action creator functions.
+// So basically, action creators are nothing more
+// than simply functions, that return actions.
+// So they are really not a Redux thing,
+// and Redux would work perfectly fine without them,
+// but they are a useful convention
+// that Redux developers have used forever, basically.
+// So Redux would work without action creators
+// but since it's a convention, let's now create some.
+// So basically we are going to create one action creator
+// for each possible action.
+function deposit(amount) {
+  return { type: "account/deposit", payload: amount };
+}
+function withdraw(amount) {
+  return { type: "account/withdraw", payload: amount };
+}
+function requestLoan(amount, purpose) {
+  return {
+    type: "account/requestLoan",
+    payload: { amount: amount, purpose: purpose },
+  };
+}
+function payLoan() {
+  return { type: "account/payLoan" };
+}
+
+store.dispatch(deposit(500));
+store.dispatch(withdraw(200));
 console.log(store.getState());
 
-// And then remember how I said
-// that the payout here will actually a bit more complicated.
-// So that's why we left this part here for later.
-// So now for the very first time as a payload,
-// we will actually pass in another object.
-// So we haven't done that before,
-// but of course this is perfectly fine because with this
-// we can then pass in basically multiple pieces of data.
-// So let's say that we want an amount of a thousand Euros
-// and then the purpose is to buy a car.
-store.dispatch({
-  type: "account/requestLoan",
-  payload: { amount: 1000, purpose: "Buy a car" },
-});
+store.dispatch(requestLoan(1000, "Buy a cheap car"));
 console.log(store.getState());
 
-store.dispatch({ type: "account/payLoan" });
+store.dispatch(payLoan());
 console.log(store.getState());
