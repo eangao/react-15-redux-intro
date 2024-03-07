@@ -64,6 +64,7 @@ const accountSlice = createSlice({
     // that lives on the state.
     deposit(state, action) {
       state.balance += action.payload;
+      state.isLoading = false;
     },
     withdraw(state, action) {
       state.balance -= action.payload;
@@ -149,7 +150,8 @@ const accountSlice = createSlice({
         state.balance += action.payload.amount;
       },
     },
-    payLoan(state, action) {
+    payLoan(state) {
+      //need an action
       /////////
       // state.loan = 0;
       // state.loanPurpose = "";
@@ -178,10 +180,70 @@ const accountSlice = createSlice({
       state.loan = 0;
       state.loanPurpose = "";
     },
+    convertingCurrency(state) {
+      //need an action
+      state.isLoading = true;
+    },
   },
 });
 
-export const { deposit, withdraw, requestLoan, payLoan } = accountSlice.actions;
+//////////////////////////////////////////////////
+// Now, in order to create Thunks in Redux Toolkit,
+// we can use the createAsyncThunk function
+// that Redux Toolkit provides us.
+// However, using this function is,
+// in my opinion, a lot of extra work,
+// when there is an easier solution,
+// which is to simply use the action creator function
+// that we already used before.
+// So we can basically just reuse that function right here.
+// And so let's do that.
+// Now, if you are really interested
+// in the createAsyncThunk function,
+// so basically in the Redux Toolkit way of doing things,
+// we will use it in a future project
+// but for now, we will just do it in the easy way.
+
+// Thunks are automatically provided in Redux Toolkit,
+// so we don't have to install anything,
+// and this will simply already work.
+// So no setup required.
+// The only thing that we need to do
+// is to then no longer export this action creator
+// that we automatically get.
+// So remove that from here.
+
+// export const { deposit, withdraw, requestLoan, payLoan } = accountSlice.actions;
+export const { withdraw, requestLoan, payLoan } = accountSlice.actions;
+// And so again, for deposit,
+// we now are going to use our own one.
+// Just make sure that it has exactly the same name,
+// and that the type,
+// so the action type has exactly this shape.
+// So again, that's the name of the slice,
+// and then slash, the name of the reducer.
+// So it's important that this follows this same convention.
+// And with that, Redux is then smart enough to figure out
+// that this is the action creator for that reducer.
+export function deposit(amount, currency) {
+  if (currency === "USD") return { type: "account/deposit", payload: amount };
+
+  return async function (dispatch, getState) {
+    dispatch({ type: "account/convertingCurrency" });
+
+    // API call
+    // https://www.frankfurter.app/
+
+    const res = await fetch(
+      `https://api.frankfurter.app/latest?amount=${amount}&from=${currency}&to=USD`
+    );
+
+    const data = await res.json();
+    const converted = data.rates.USD;
+
+    dispatch({ type: "account/deposit", payload: converted });
+  };
+}
 
 export default accountSlice.reducer;
 
