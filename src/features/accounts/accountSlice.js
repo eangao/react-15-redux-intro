@@ -68,36 +68,114 @@ const accountSlice = createSlice({
     withdraw(state, action) {
       state.balance -= action.payload;
     },
-    requestLoan(state, action) {
-      //       Now, in this case, not doing anything
-      // is not returning the state
-      // but instead simply returning from this function.
-      // So we will not return anything, because remember,
-      // in these new reducers, we no longer need to return
-      // the entire state.
-      // So we just modify what we want.
-      // And so in this case, we don't want to modify anything.
-      // So this is indeed a huge shift.
-      // And if you were already used to writing it this way,
-      // because you practice the use reducer hook,
-      // then this is gonna be an even bigger shift.
-      // But for total beginners, I believe that this
-      // is actually a lot easier.
-      // And this will become even more apparent
-      // When we have, like, nested objects and arrays.
-      if (state.loan > 0) return;
 
-      //       So here it is actually an equal
-      // because remember, we are now assigning.
-      // So we are really overriding.
-      state.loan = action.payload.amount;
-      state.loanPurpose = action.payload.purpose;
-      state.balance += action.payload.amount;
+    ///////////////////////////////////////////
+    //     And also indeed, we see that we only get
+    // the first value here, but not the second one.
+    // And the reason for this is that by default,
+    // these automatically created action creators
+    // only accept one single argument.
+    // And so that then becomes action.payload.
+
+    // That's why earlier we also got this not a number here,
+    // 'cause we were then trying to add this payload amount
+    // to the loan, which didn't exist.
+    // So the amount and the purpose were actually not received.
+
+    // And so this is basically one of the limitations
+    // of having this opinionated structure.
+    // So if these action creators are automatically created,
+    // then we cannot really configure them.
+    // So we cannot easily make them receive two arguments.
+
+    // However, luckily for us, there is a solution
+    // for this that Redux Toolkit implemented for us.
+    // So basically, what we have to do is to prepare
+    // the data before it reaches the reducer.
+    // And so what we have to do now here is to separate this.
+    // So here, we now need a new object.
+    // So let's open that there and then close that right here.
+    // And then we need to call this function here,
+    // just the reducer and then before that,
+    // we need to prepare that data with a prepare method.
+
+    // And so what we need to do here now is to return a new object
+    // which will then become the payload object in the reducer.
+    // So that's why this is called prepare.
+    // So let me just write a code and then it will make sense.
+    // So again, here we return a new payload basically.
+    // And so this payload should become an object
+    // with amount and purpose.
+    // And so it is this object that we return from here,
+    // which again, will then be the payload in the reducer.
+
+    // And so this is what we need to do
+    // if we want our creator to receive
+    // more than just one argument.
+    // Now, of course, we could also have configured it
+    // in a way that we directly pass in that object.
+    // Well, not here.
+    // But here.
+    // So again, we could have made it in a way
+    // that we the data as an object right here, immediately.
+    // And so then we would also have only one argument.
+    // But if you do want these two arguments,
+    // then this is the way to go.
+
+    // And since I wanted to show you this,
+    // we just did it this way and also this way,
+    // we then didn't have to change anything
+    // in our code right here.
+    // So otherwise, then we would have to come back
+    // to our React code and change that here.
+    // And of course, these preparation can also include
+    // some other steps.
+    // So for example, later on in that other slice,
+    // we will then also add the created add property
+    // where we set the date.
+    // So also what we did earlier in the action creator.
+    requestLoan: {
+      prepare(amount, purpose) {
+        return {
+          payload: { amount, purpose },
+        };
+      },
+
+      reducer(state, action) {
+        if (state.loan > 0) return;
+
+        state.loan = action.payload.amount;
+        state.loanPurpose = action.payload.purpose;
+        state.balance += action.payload.amount;
+      },
     },
     payLoan(state, action) {
+      /////////
+      // state.loan = 0;
+      // state.loanPurpose = "";
+      // state.balance -= state.loan;
+      //////
+      //       And then paying it works just the same way.
+      // Or actually, it doesn't.
+      // Let's see.
+      // So now we get 3000.
+      // And so after paying, ah, it should go back.
+      // So what's wrong here?
+      // Ah, and I can see the problem already.
+      // So here, we run into one of the pitfalls that comes
+      // with the fact that we are now mutating our state.
+      // So it has advantages, but it also has its problems.
+      // So notice, how here in the very beginning
+      // we set alone to zero.
+      // And so then, here in this next line of code,
+      // this is already zero.
+      // And so then we simply subtract zero from the balance
+      // which will not change it.
+      // And so this now needs to come first.
+      // So we now need to pay attention to the order of the code.
+      state.balance -= state.loan;
       state.loan = 0;
       state.loanPurpose = "";
-      state.balance -= state.loan;
     },
   },
 });
