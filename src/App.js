@@ -46,6 +46,7 @@ export default App;
 //
 // npm  i redux-thunk
 
+//////
 //redux dev tools
 // 1 -intsall chrome extension
 //https://chromewebstore.google.com/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd
@@ -67,3 +68,7 @@ export default App;
 //     applyMiddleware(thunk)
 //   )
 // );
+
+//////
+// installing redux toolkit
+//npm i @reduxjs/toolkit
