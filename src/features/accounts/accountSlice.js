@@ -181,11 +181,7 @@ const accountSlice = createSlice({
   },
 });
 
-console.log(accountSlice);
-
 export const { deposit, withdraw, requestLoan, payLoan } = accountSlice.actions;
-
-console.log(requestLoan(200, "test"));
 
 export default accountSlice.reducer;
 
