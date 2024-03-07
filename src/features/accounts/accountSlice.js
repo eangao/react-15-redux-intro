@@ -173,6 +173,7 @@ const accountSlice = createSlice({
       // which will not change it.
       // And so this now needs to come first.
       // So we now need to pay attention to the order of the code.
+      //
       state.balance -= state.loan;
       state.loan = 0;
       state.loanPurpose = "";
