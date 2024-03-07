@@ -45,3 +45,25 @@ export default App;
 // in our action creator functions.
 //
 // npm  i redux-thunk
+
+//redux dev tools
+// 1 -intsall chrome extension
+//https://chromewebstore.google.com/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd
+//
+//2 - install npm
+//npm i redux-devtools-extension
+/////////
+// Issue with installing redux-devtools-extention (solved)
+// 48 upvotes
+// Praveen · Lecture 272 · 7 months ago
+// Issue with command
+// 1 ) This command not go na work : npm i  redux-devtools-extention (This package has been deprecated)
+// 2 )  Use this to solve the problem : npm i @redux-devtools/extension ;
+//////
+// import { composeWithDevTools } from '@redux-devtools/extension';
+// const store = createStore(
+//   reducer,
+//   composeWithDevTools(
+//     applyMiddleware(thunk)
+//   )
+// );
